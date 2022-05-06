@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 import pydot
 from networkx.drawing.nx_pydot import graphviz_layout
 
+import GUI
+
+
+
 G = nx.DiGraph()
 G.add_node("A", weight=15121,is_goal=False)
 G.add_node("B", weight=15151,is_goal=False)
@@ -126,3 +130,7 @@ def iterative_deepening_dfs_rec(node, target, current_depth, max_depth):
     return None, bottom_reached
 
 print(graph)
+
+
+if __name__ == '__main__':
+    GUI

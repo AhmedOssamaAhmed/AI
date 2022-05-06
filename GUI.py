@@ -4,7 +4,7 @@ from PIL.ImImagePlugin import DATE
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import networkx as nx
 from networkx.drawing.nx_pydot import graphviz_layout
-import time
+
 
 isGoal = False
 
