@@ -75,6 +75,11 @@ def AddEdge():
     showTree(True)
 
 
+def deleteGraph():
+    G.clear()
+    showTree(True)
+
+
 #
 # G.add_node("A", weight=0, is_goal=False)
 # G.add_node("B", weight=15151, is_goal=False)
@@ -99,7 +104,7 @@ frame = tk.Frame(
 window.title("AI algorithms visualizer")
 frame.pack()
 
-frame.columnconfigure(2, weight=1, minsize=100)
+frame.columnconfigure(3, weight=1, minsize=100)
 frame.rowconfigure(1, weight=1, minsize=100)
 
 # adding nodes frames
@@ -108,7 +113,14 @@ nodes_frame = tk.Frame(
     relief=tk.FLAT,
     borderwidth=3,
     padx=5,
-    pady=20,
+    pady=10,
+)
+addition_frame = tk.Frame(
+    master=frame,
+    relief=tk.FLAT,
+    borderwidth=3,
+    padx=5,
+    pady=10
 )
 nodes_frame.grid(row=1, column=0, padx=20, pady=50)
 guide_text = tk.Label(master=nodes_frame, text="Node name ")
@@ -156,12 +168,15 @@ delete_node = tk.Text(master=nodes_frame, width=6, height=1)
 delete_node.pack(pady=5)
 delete_node_button = tk.Button(master=nodes_frame, text="Delete Node", borderwidth=10, command=deleteNode)
 delete_node_button.pack()
+rest_button = tk.Button(master=nodes_frame,text="RESET GRAPH", pady=5,padx=5,borderwidth=9,relief=tk.GROOVE, width=20, bg='orange'
+                        ,command=deleteGraph)
+rest_button.pack(pady=9)
 algos_menu_frame=tk.Frame(
     master=nodes_frame,
     relief=tk.RIDGE,
     borderwidth=15
 )
-algos_menu_frame.pack(pady=10)
+algos_menu_frame.pack(pady=1)
 algos_menu = tk.Menubutton(master=algos_menu_frame,text="choose algorithm",bg="blue", fg="yellow")
 algos_menu.menu=tk.Menu(algos_menu)
 algos_menu["menu"]=algos_menu.menu
@@ -177,10 +192,10 @@ algos_menu.pack()
 graph_frame = tk.Frame(
     master=frame,
     relief=tk.GROOVE,
-    pady=5,
+    pady=0,
     padx=5
 )
-graph_frame.grid(row=1, column=1, padx=0, pady=5)
+graph_frame.grid(row=1, column=1, padx=0, pady=0)
 
 
 def showTree(refresh=False):
@@ -220,4 +235,7 @@ def showTree(refresh=False):
 
 
 showTree()
+
+
+# window.state('zoomed')
 window.mainloop()
