@@ -6,6 +6,7 @@ import networkx as nx
 from networkx.drawing.nx_pydot import graphviz_layout
 
 import BFS
+import ZORAAAAR
 
 isGoal = False
 
@@ -186,7 +187,7 @@ delete_node.pack(pady=5)
 delete_node_button = tk.Button(master=nodes_frame, text="Delete Node", borderwidth=10, command=deleteNode)
 delete_node_button.pack()
 rest_button = tk.Button(master=nodes_frame,text="RESET GRAPH", pady=5,padx=5,borderwidth=9,relief=tk.GROOVE, width=20, bg='orange'
-                        ,command=deleteGraph)
+                        ,command=ZORAAAAR.node_statics)
 rest_button.pack(pady=9)
 algos_menu_frame=tk.Frame(
     master=nodes_frame,
