@@ -5,6 +5,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import networkx as nx
 from networkx.drawing.nx_pydot import graphviz_layout
 
+import BFS
 
 isGoal = False
 
@@ -57,10 +58,10 @@ def AddNode():
 
 
 def AddEdge():
-    if isGoal:
-        color = "blue"
-    else:
-        color = "yellow"
+    # if isGoal:
+    #     color = "blue"
+    # else:
+    #     color = "yellow"
     from_node, to_node, weight = getEdgeData()
     if from_node not in nx.nodes(G) or to_node not in nx.nodes(G):
         print("node doesn't exist please add node first")
@@ -70,7 +71,7 @@ def AddEdge():
         root.title("Warning!!")
         root.mainloop()
     else:
-        G.add_edge(from_node, to_node, weight=weight,node_color=color)
+        G.add_edge(from_node, to_node, weight=weight,color='r')
     print(G.adj)
     showTree(True)
 
@@ -180,7 +181,7 @@ algos_menu_frame.pack(pady=1)
 algos_menu = tk.Menubutton(master=algos_menu_frame,text="choose algorithm",bg="blue", fg="yellow")
 algos_menu.menu=tk.Menu(algos_menu)
 algos_menu["menu"]=algos_menu.menu
-algos_menu.menu.add_command(label="Breadth first",)
+algos_menu.menu.add_command(label="Breadth first",command=BFS.BFS_helper)
 algos_menu.menu.add_command(label="depth first",)
 algos_menu.menu.add_command(label="Iterative deepening",)
 algos_menu.menu.add_command(label="Uniform Cost",)
@@ -214,8 +215,9 @@ def showTree(refresh=False):
         colors = []
         for color in node_colors.values():
             colors.append(color)
-
-        nx.draw(G, pos, with_labels=True, ax=ax1, node_color=colors)
+        edges = G.edges()
+        edge_colors = [G[u][v]['color'] for u, v in edges]
+        nx.draw(G, pos, with_labels=True, ax=ax1, node_color=colors,edge_color= edge_colors)
         nx.draw_networkx_edge_labels(G, pos, edge_labels=labels, ax=ax1)
     else:
         figure1 = plt.Figure()
@@ -226,11 +228,12 @@ def showTree(refresh=False):
         labels = nx.get_edge_attributes(G, 'weight')
         pos = graphviz_layout(G, prog="dot")
         node_colors = nx.get_node_attributes(G, 'node_color')
+        edge_colors = nx.get_edge_attributes(G,'edge_color')
         colors = []
         for color in node_colors.values():
             colors.append(color)
         print(f"this is colors list: {colors}")
-        nx.draw(G, pos, with_labels=True, ax=ax1, node_color=colors)
+        nx.draw(G, pos, with_labels=True, ax=ax1, node_color=colors,edge_color = edge_colors)
         nx.draw_networkx_edge_labels(G, pos, edge_labels=labels, ax=ax1)
 
 
