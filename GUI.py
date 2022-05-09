@@ -21,9 +21,22 @@ def switch():
         isGoal = True
     print(isGoal)
 
-
+node_counter = 'A'
 def getNodeData():
+    global node_counter
     nodeName = node_name.get("1.0", "end-1c")
+    if nodeName == "":
+        nodeName = node_counter
+        node_ascii = ord(node_counter)
+        if node_ascii == 90 :
+            node_ascii +=7
+        else:
+            node_ascii+=1
+        node_counter = chr(node_ascii)
+    else:
+        node_ascii = ord(nodeName)
+        node_ascii +=1
+        node_counter = chr(node_ascii)
     nodeWeight = float(node_weight.get("1.0", "end-1c"))
     return nodeName, nodeWeight
 
@@ -78,6 +91,9 @@ def AddEdge():
 
 def deleteGraph():
     G.clear()
+    global node_counter
+    node_counter ="A"
+
     showTree(True)
 
 
@@ -127,7 +143,7 @@ nodes_frame.grid(row=1, column=0, padx=20, pady=50)
 guide_text = tk.Label(master=nodes_frame, text="Node name ")
 guide_text.pack()
 node_name = tk.Text(master=nodes_frame, width=6, height=1)
-node_name.insert(tk.END,"A")
+# node_name.insert(tk.END,"A")
 node_name.pack(pady=2)
 node_weight_text = tk.Label(master=nodes_frame, text="enter the node weight")
 node_weight_text.pack(pady=2)
