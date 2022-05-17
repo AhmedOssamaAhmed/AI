@@ -11,6 +11,23 @@ queue = []  # Initialize a queue
 visited = []  # List for visited nodes.
 
 
+def dfs(visited, graph, node):  # function for dfs
+    our_visited=[]
+    visited_edges=[]
+
+    if node not in visited:
+        is_Goal = nx.get_node_attributes(G, "is_goal")
+        if node == is_Goal:
+            return our_visited,visited_edges
+
+        print(node)
+        visited.append(node)
+        our_visited.append(node)
+        for neighbour in graph[node]:
+            neighbour=dfs(visited, graph, neighbour)
+            visited_edges.append([node,neighbour])
+
+
 def bfs(visited, graph, node):  # function for BFS
     our_visited = []
     visited.append(node)
@@ -46,8 +63,8 @@ def recurser_visualizer(visited_nodes, visited_edges, counter=0):
     max = visited_nodes[-1]
     if counter == len(visited_edges): return
 
-    for j in range(len(visited_edges[counter]) -1):
-        if visited_edges[counter-1][j + 1] == max: return
+    for j in range(len(visited_edges[counter]) - 1):
+        if visited_edges[counter - 1][j + 1] == max: return
         nx.set_edge_attributes(G, {(visited_edges[counter][j], visited_edges[counter][j + 1]): {"color": "b"}})
         print(visited_edges[counter][j], visited_edges[counter][j + 1])
         showTree(True)
@@ -293,7 +310,8 @@ algos_menu.pack()
 
 gui_path = tk.Text(additional_frame, height=5,
                    width=25,
-                   bg="light cyan")
+                   bg="light cyan",
+                   state='disabled')
 gui_path.pack(pady=10)
 
 graph_frame = tk.Frame(
