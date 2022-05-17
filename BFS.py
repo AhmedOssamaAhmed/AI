@@ -17,6 +17,16 @@ def bfs(visited, graph, node):  # function for BFS
         our_visited.append(m)
         goal = is_Goal[m]
         if goal:
+            #Ziad_Edits
+            visited.append(goal)
+            print("Etba3 el Nodes")
+            print(visited)
+            print("Etba3 el Nodes")
+            visited_edges.append(([m, goal]))
+            print("Etba3 el Edges")
+            print(visited_edges)
+            print("Done")
+            #Ziad_Edits
             return our_visited, visited_edges
         else:
             for neighbour in graph[m]:

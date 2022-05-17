@@ -20,7 +20,7 @@ def node_statics():
     GUI.G.add_edge("C", "I", weight=4,color='r')
     GUI.G.add_edge("C", "F", weight=9,color='r')
     GUI.G.add_edge("C", "G", weight=7,color='r')
-    GUI.G.add_edge("D", "H", weight=7,color='r')
     GUI.G.add_edge("D", "E", weight=7,color='r')
+    GUI.G.add_edge("D", "H", weight=7,color='r')
     GUI.G.add_edge("D", "J", weight=7,color='r')
     GUI.showTree(True)

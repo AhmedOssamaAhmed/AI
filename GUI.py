@@ -46,8 +46,8 @@ def recurser_visualizer(visited_nodes, visited_edges, counter=0):
     max = visited_nodes[-1]
     if counter == len(visited_edges): return
 
-    for j in range(len(visited_edges[counter]) - 1):
-        if visited_edges[counter][j + 1] == max: return
+    for j in range(len(visited_edges[counter]) -1):
+        if visited_edges[counter-1][j + 1] == max: return
         nx.set_edge_attributes(G, {(visited_edges[counter][j], visited_edges[counter][j + 1]): {"color": "b"}})
         print(visited_edges[counter][j], visited_edges[counter][j + 1])
         showTree(True)
@@ -147,6 +147,9 @@ def deleteGraph():
     G.clear()
     global node_counter
     node_counter = "A"
+    visited.clear()
+    queue.clear()
+    gui_path.delete('1.0', tk.END)
 
     showTree(True)
 
