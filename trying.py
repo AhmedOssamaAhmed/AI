@@ -22,6 +22,7 @@ labels = nx.get_edge_attributes(G, 'weight')
 pos = graphviz_layout(G, prog="dot")
 nx.draw(G, pos, with_labels=True)
 nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
+# plt.show()
 
 # print(node_we)
 # plt.show()
@@ -50,29 +51,31 @@ visited = []  # List for visited nodes.
 
 our_visited = []
 visited_edges = []
-def dfs(visited, graph, node):  # function for dfs
 
+
+def dfs(visited, graph, node):  # function for dfs
 
     if node not in visited:
         is_Goal = nx.get_node_attributes(G, "is_goal")
         goal = is_Goal[node]
-        print(goal)
+        # print(goal)
         if goal:
             print("reached goal node")
-            print(f"visited {our_visited}")
+            print(f"visited {visited}")
             print(f"visited edges:{visited_edges}")
-            return our_visited, visited_edges
+            return
 
         # print(node)
         visited.append(node)
         our_visited.append(node)
         for neighbour in graph[node]:
             print("reached iterations")
-            neighbour = dfs(visited, graph, neighbour)
+            print(f"neigbour is {neighbour}")
             visited_edges.append([node, neighbour])
-
+            dfs(visited, graph, neighbour)
+    return visited,visited_edges
 
 graph = G.adj
-x, y = dfs(visited, graph, "A")
+x,y = dfs(visited, graph, "A")
 print(f"our visited : {x}")
 print(f"visited edges : {y}")

@@ -45,22 +45,35 @@ def find_goal(G):
 queue = []  # Initialize a queue
 visited = []  # List for visited nodes.
 
+visited_edges = []
 
 def dfs(visited, graph, node):  # function for dfs
+    global visited_edges
     our_visited = []
-    visited_edges = []
-
     if node not in visited:
         is_Goal = nx.get_node_attributes(G, "is_goal")
-        if node == is_Goal:
-            return our_visited, visited_edges
-
+        goal = is_Goal[node]
+        print(goal)
         print(node)
-        visited.append(node)
-        our_visited.append(node)
-        for neighbour in graph[node]:
-            neighbour = dfs(visited, graph, neighbour)
-            visited_edges.append([node, neighbour])
+        if goal:
+            print("reached goal node")
+            print(f"visited {visited}")
+            print(f"visited edges:{visited_edges}")
+            return True
+
+        else:
+            # print(node)
+            visited.append(node)
+            our_visited.append(node)
+            for neighbour in graph[node]:
+                print("reached iterations")
+                print(node)
+                print(f"neigbour is {neighbour}")
+                visited_edges.append([node, neighbour])
+                isDone= dfs(visited, graph, neighbour)
+                if isDone:
+                    return visited, visited_edges
+        # return visited,visited_edges
 
 
 def bfs(visited, graph, node):  # function for BFS
@@ -87,6 +100,16 @@ def bfs(visited, graph, node):  # function for BFS
 def BFS_helper():
     graph = G.adj
     visited_nodes, visited_edges = bfs(visited, graph, list(graph.keys())[0])
+    print(f"the visited nodes are: {visited_nodes}")
+    print(f"the visited edges are: {visited_edges}")
+    get_path(G)
+    recurser_visualizer(visited_nodes,visited_edges)
+    showTree(True)
+
+
+def DFS_helper():
+    graph = G.adj
+    visited_nodes, visited_edges = dfs(visited, graph, list(graph.keys())[0])
     print(f"the visited nodes are: {visited_nodes}")
     print(f"the visited edges are: {visited_edges}")
     get_path(G)
@@ -385,7 +408,7 @@ algos_menu = tk.Menubutton(master=algos_menu_frame, text="choose algorithm", bg=
 algos_menu.menu = tk.Menu(algos_menu)
 algos_menu["menu"] = algos_menu.menu
 algos_menu.menu.add_command(label="Breadth first", command=BFS_helper)
-algos_menu.menu.add_command(label="depth first", )
+algos_menu.menu.add_command(label="depth first",command=DFS_helper )
 algos_menu.menu.add_command(label="Iterative deepening", )
 algos_menu.menu.add_command(label="Uniform Cost",command=uniform_cost_helper )
 algos_menu.menu.add_command(label="A*", command=Astar_helper)
