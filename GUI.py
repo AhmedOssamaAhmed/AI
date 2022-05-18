@@ -5,6 +5,41 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import networkx as nx
 from networkx.drawing.nx_pydot import graphviz_layout
 import ZORAAAAR
+from Astar import Graph
+
+
+def graphMap(graph):
+    first_dict = graph.adj
+    graph_len = len(list(first_dict.items()))
+    our_dict = {}
+    # looping on the whole graph
+    for j in range(graph_len):
+        major_key = list(first_dict.items())[j][0]
+        value = list(first_dict.items())[j][1]
+        # second loop making tuples
+        major_list = []
+        for i in range(len(value)):
+            minor_key = list(value.items())[i][0]
+            minor_value_helper = list(value.items())[i][1]
+            minor_value = list(minor_value_helper.items())[0][1]
+            arr = []
+            arr.append(minor_key)
+            arr.append(minor_value)
+            arr = tuple(arr)
+            major_list.append(arr)
+            # print(major_list)
+        our_dict.update({major_key: major_list})
+        # print(our_dict)
+    return our_dict
+
+
+def find_goal(G):
+    is_Goals = nx.get_node_attributes(G, "is_goal")
+    for node in is_Goals.items():
+        if node[1] is True:
+            # print(node[0])
+            return node[0]
+
 
 # start BFS
 queue = []  # Initialize a queue
@@ -12,20 +47,20 @@ visited = []  # List for visited nodes.
 
 
 def dfs(visited, graph, node):  # function for dfs
-    our_visited=[]
-    visited_edges=[]
+    our_visited = []
+    visited_edges = []
 
     if node not in visited:
         is_Goal = nx.get_node_attributes(G, "is_goal")
         if node == is_Goal:
-            return our_visited,visited_edges
+            return our_visited, visited_edges
 
         print(node)
         visited.append(node)
         our_visited.append(node)
         for neighbour in graph[node]:
-            neighbour=dfs(visited, graph, neighbour)
-            visited_edges.append([node,neighbour])
+            neighbour = dfs(visited, graph, neighbour)
+            visited_edges.append([node, neighbour])
 
 
 def bfs(visited, graph, node):  # function for BFS
@@ -55,25 +90,74 @@ def BFS_helper():
     print(f"the visited nodes are: {visited_nodes}")
     print(f"the visited edges are: {visited_edges}")
     get_path(G)
-    recurser_visualizer(visited_nodes, visited_edges)
+    visualizer(visited_edges)
     showTree(True)
 
+
+def Astar_helper():
+    graph = graphMap(G)
+    H = nx.get_node_attributes(G, 'weight')
+    goal_node = find_goal(G)
+    graph1 = Graph(graph, H)
+    visited, edges, path = graph1.a_star_algorithm(list(graph.keys())[0], goal_node)
+    print(f"the real nodes are : {visited}")
+    print(f"the real edges are : {edges}")
+    print(f"the real path is : {path}")
+    gui_path.insert(tk.END, f"the path is {list(path)}")
+
+    visualizer(edges,)
+    showTree(True)
+
+
+def greedy_helper():
+    graph = graphMap(G)
+    H = nx.get_node_attributes(G, 'weight')
+    goal_node = find_goal(G)
+    graph1 = Graph(graph, H)
+    visited, edges, path = graph1.greedy_algorithm(list(graph.keys())[0], goal_node)
+    print(f"the real nodes are : {visited}")
+    print(f"the real edges are : {edges}")
+    print(f"the real path is : {path}")
+    gui_path.insert(tk.END, f"the path is {list(path)}")
+
+    visualizer(edges)
+    showTree(True)
+
+def uniform_cost_helper():
+    graph = graphMap(G)
+    H = nx.get_node_attributes(G, 'weight')
+    goal_node = find_goal(G)
+    graph1 = Graph(graph, H)
+    visited, edges, path = graph1.uniform_cost(list(graph.keys())[0], goal_node)
+    print(f"the real nodes are : {visited}")
+    print(f"the real edges are : {edges}")
+    print(f"the real path is : {path}")
+    gui_path.insert(tk.END, f"the path is {list(path)}")
+
+    visualizer(edges)
+    showTree(True)
 
 def recurser_visualizer(visited_nodes, visited_edges, counter=0):
     max = visited_nodes[-1]
     if counter == len(visited_edges): return
-
     for j in range(len(visited_edges[counter]) - 1):
         if visited_edges[counter - 1][j + 1] == max: return
         nx.set_edge_attributes(G, {(visited_edges[counter][j], visited_edges[counter][j + 1]): {"color": "b"}})
         print(visited_edges[counter][j], visited_edges[counter][j + 1])
+
         showTree(True)
 
     counter += 1
     recurser_visualizer(visited_nodes, visited_edges, counter)
 
+def visualizer(visited_edges):
+    for i in range(len(visited_edges)):
+        nx.set_edge_attributes(G,{(visited_edges[i][0], visited_edges[i][1]): {"color": "b"}})
+        print(f"reached here {i}")
+        showTree(True)
 
 # end BFS
+
 isGoal = False
 
 
@@ -303,15 +387,16 @@ algos_menu["menu"] = algos_menu.menu
 algos_menu.menu.add_command(label="Breadth first", command=BFS_helper)
 algos_menu.menu.add_command(label="depth first", )
 algos_menu.menu.add_command(label="Iterative deepening", )
-algos_menu.menu.add_command(label="Uniform Cost", )
-algos_menu.menu.add_command(label="A*", )
-algos_menu.menu.add_command(label="Greedy", )
+algos_menu.menu.add_command(label="Uniform Cost",command=uniform_cost_helper )
+algos_menu.menu.add_command(label="A*", command=Astar_helper)
+algos_menu.menu.add_command(label="Greedy",command=greedy_helper )
 algos_menu.pack()
 
 gui_path = tk.Text(additional_frame, height=5,
                    width=25,
                    bg="light cyan",
-                   state='disabled')
+                   # state='disabled'
+                   )
 gui_path.pack(pady=10)
 
 graph_frame = tk.Frame(

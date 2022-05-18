@@ -3,16 +3,16 @@ import GUI
 
 def node_statics():
     GUI.G
-    GUI.G.add_node("A", weight=15121, is_goal=False,node_color="yellow")
-    GUI.G.add_node("B", weight=15151, is_goal=False,node_color="yellow")
-    GUI.G.add_node("C", weight=154, is_goal=False,node_color="yellow")
-    GUI.G.add_node("D", weight=155, is_goal=False,node_color="yellow")
-    GUI.G.add_node("E", weight=115, is_goal=True,node_color="blue")
-    GUI.G.add_node("F", weight=1, is_goal=False,node_color="yellow")
-    GUI.G.add_node("G", weight=10, is_goal=False,node_color="yellow")
-    GUI.G.add_node("H", weight=10, is_goal=False,node_color="yellow")
-    GUI.G.add_node("I", weight=10, is_goal=False,node_color="yellow")
-    GUI.G.add_node("J", weight=10, is_goal=False,node_color="yellow")
+    GUI.G.add_node("A", weight=9, is_goal=False,node_color="yellow")
+    GUI.G.add_node("B", weight=7, is_goal=False,node_color="yellow")
+    GUI.G.add_node("C", weight=3, is_goal=False,node_color="yellow")
+    GUI.G.add_node("D", weight=4, is_goal=False,node_color="yellow")
+    GUI.G.add_node("E", weight=0, is_goal=True,node_color="blue")
+    GUI.G.add_node("F", weight=6, is_goal=False,node_color="yellow")
+    GUI.G.add_node("G", weight=7, is_goal=False,node_color="yellow")
+    GUI.G.add_node("H", weight=5, is_goal=False,node_color="yellow")
+    GUI.G.add_node("I", weight=4, is_goal=False,node_color="yellow")
+    GUI.G.add_node("J", weight=4, is_goal=False,node_color="yellow")
 
     GUI.G.add_edge("A", "B", weight=1,color='r')
     GUI.G.add_edge("A", "C", weight=2,color='r')
