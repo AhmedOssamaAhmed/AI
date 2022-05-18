@@ -54,7 +54,7 @@ def node_statics():
     GUI.G.add_node("H", weight=0, is_goal=True, node_color="blue")
     GUI.G.add_node("I", weight=2, is_goal=False, node_color="yellow")
     GUI.G.add_node("J", weight=4, is_goal=False, node_color="yellow")
-    GUI.G.add_node("k", weight=6, is_goal=False, node_color="yellow")
+    GUI.G.add_node("K", weight=6, is_goal=False, node_color="yellow")
 
     GUI.G.add_edge("A", "B", weight=2, color='r')
     GUI.G.add_edge("A", "I", weight=3, color='r')
