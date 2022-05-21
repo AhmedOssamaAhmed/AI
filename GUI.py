@@ -1,4 +1,6 @@
 import tkinter as tk
+from collections import deque
+
 import matplotlib.pyplot as plt
 from PIL.ImImagePlugin import DATE
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -6,6 +8,47 @@ import networkx as nx
 from networkx.drawing.nx_pydot import graphviz_layout
 import ZORAAAAR
 from Astar import Graph
+
+G = nx.DiGraph()
+
+is_directed = True
+temp_graph = None
+
+
+def toUndirected():
+    temp_graph = G.copy()
+    weight = nx.get_edge_attributes(G, 'weight')
+    edges = list(G.edges())
+    print(edges)
+    print(weight)
+    print(list(weight.values())[0])
+    print(edges[0])
+    for i in range(len(edges)):
+        G.add_edge(edges[i][1], edges[i][0], weight=list(weight.values())[i], color='r')
+    return temp_graph
+
+
+def toDirected(temp_graph):
+    # G.clear()
+    global G
+    G = temp_graph
+    showTree(True)
+    # return G
+
+
+def direction_switch():
+    global is_directed
+    global temp_graph
+    if is_directed:
+        is_directed_button.config(image=off)
+        is_directed = False
+        temp_graph = toUndirected()
+    else:
+        is_directed_button.config(image=on)
+        is_directed = True
+        toDirected(temp_graph)
+    showTree(True)
+    print(is_directed)
 
 
 def graphMap(graph):
@@ -41,11 +84,22 @@ def find_goal(G):
             return node[0]
 
 
+def resetEdgeColor():
+    gui_path.delete('1.0', tk.END)
+    edges = list(G.edges)
+    print(edges[0])
+    for i in range(len(edges)):
+        nx.set_edge_attributes(G, {(edges[i][0], edges[i][1]): {"color": "r"}})
+        nx.set_edge_attributes(G, {(edges[i][1], edges[i][0]): {"color": "r"}})
+        print("reset done successfully ")
+
+
 # start BFS
 queue = []  # Initialize a queue
 visited = []  # List for visited nodes.
 
 visited_edges = []
+
 
 def dfs(visited, graph, node):  # function for dfs
     global visited_edges
@@ -70,7 +124,7 @@ def dfs(visited, graph, node):  # function for dfs
                 print(node)
                 print(f"neigbour is {neighbour}")
                 visited_edges.append([node, neighbour])
-                isDone= dfs(visited, graph, neighbour)
+                isDone = dfs(visited, graph, neighbour)
                 if isDone:
                     return visited, visited_edges
         # return visited,visited_edges
@@ -98,60 +152,76 @@ def bfs(visited, graph, node):  # function for BFS
 
 
 def BFS_helper():
+    visited.clear()
+    resetEdgeColor()
+
     graph = G.adj
-    visited_nodes, visited_edges = bfs(visited, graph, list(graph.keys())[0])
+    visited_nodes, visited_edges = bfs(visited, graph, getStartingNode())
     print(f"the visited nodes are: {visited_nodes}")
     print(f"the visited edges are: {visited_edges}")
-    get_path(G)
-    recurser_visualizer(visited_nodes,visited_edges)
+    # goal_node = find_goal(G)
+    get_path(G, visited_nodes)
+    # gui_path.insert(tk.END, f"the path is {path}")
+    # print(f"new reached path is {(path)}")
+    # for nodes in path:
+    #     print(f"new reached path is {(nodes)}")
+    visualizerV2(visited_edges, visited_nodes)
+    # visualizer(visited_edges)
     showTree(True)
 
 
 def DFS_helper():
+    visited.clear()
+    resetEdgeColor()
     graph = G.adj
-    visited_nodes, visited_edges = dfs(visited, graph, list(graph.keys())[0])
+    visited_nodes, visited_edges = dfs(visited, graph, getStartingNode())
     print(f"the visited nodes are: {visited_nodes}")
     print(f"the visited edges are: {visited_edges}")
-    get_path(G)
+    get_path(G, visited_nodes)
     visualizer(visited_edges)
     showTree(True)
 
 
 def Astar_helper():
+    resetEdgeColor()
     graph = graphMap(G)
     H = nx.get_node_attributes(G, 'weight')
     goal_node = find_goal(G)
     graph1 = Graph(graph, H)
-    visited, edges, path = graph1.a_star_algorithm(list(graph.keys())[0], goal_node)
+    visited, edges, path = graph1.a_star_algorithm(getStartingNode(), goal_node)
     print(f"the real nodes are : {visited}")
     print(f"the real edges are : {edges}")
     print(f"the real path is : {path}")
     gui_path.insert(tk.END, f"the path is {list(path)}")
 
-    visualizer(edges,)
+    visualizer(edges, )
     showTree(True)
 
 
 def greedy_helper():
+    resetEdgeColor()
     graph = graphMap(G)
     H = nx.get_node_attributes(G, 'weight')
     goal_node = find_goal(G)
     graph1 = Graph(graph, H)
-    visited, edges, path = graph1.greedy_algorithm(list(graph.keys())[0], goal_node)
+    visited, edges, path = graph1.greedy_algorithm(getStartingNode(), goal_node)
     print(f"the real nodes are : {visited}")
     print(f"the real edges are : {edges}")
     print(f"the real path is : {path}")
+    gui_path.delete('1.0', tk.END)
     gui_path.insert(tk.END, f"the path is {list(path)}")
 
     visualizer(edges)
     showTree(True)
+
 
 def uniform_cost_helper():
+    resetEdgeColor()
     graph = graphMap(G)
     H = nx.get_node_attributes(G, 'weight')
     goal_node = find_goal(G)
     graph1 = Graph(graph, H)
-    visited, edges, path = graph1.uniform_cost(list(graph.keys())[0], goal_node)
+    visited, edges, path = graph1.uniform_cost(getStartingNode(), goal_node)
     print(f"the real nodes are : {visited}")
     print(f"the real edges are : {edges}")
     print(f"the real path is : {path}")
@@ -159,6 +229,7 @@ def uniform_cost_helper():
 
     visualizer(edges)
     showTree(True)
+
 
 def recurser_visualizer(visited_nodes, visited_edges, counter=0):
     max = visited_nodes[-1]
@@ -173,11 +244,33 @@ def recurser_visualizer(visited_nodes, visited_edges, counter=0):
     counter += 1
     recurser_visualizer(visited_nodes, visited_edges, counter)
 
+
 def visualizer(visited_edges):
     for i in range(len(visited_edges)):
-        nx.set_edge_attributes(G,{(visited_edges[i][0], visited_edges[i][1]): {"color": "b"}})
+        nx.set_edge_attributes(G, {(visited_edges[i][0], visited_edges[i][1]): {"color": "b"}})
+        nx.set_edge_attributes(G, {(visited_edges[i][1], visited_edges[i][0]): {"color": "b"}})
         print(f"reached here {i}")
         showTree(True)
+
+
+def visualizerV2(visited_edges, visited_nodes):
+    max = visited_nodes[-1]
+    max_index = 0
+    for i in range(len(visited_edges)):
+        for j in range(len(visited_edges[i])):
+            if max == visited_edges[i][j]:
+                max_index = i
+    print(f"that is the maximum index {max_index}")
+
+    for i in range(max_index + 1):
+        # print(f"max node is {max}")
+        nx.set_edge_attributes(G, {(visited_edges[i][0], visited_edges[i][1]): {"color": "b"}})
+        nx.set_edge_attributes(G, {(visited_edges[i][1], visited_edges[i][0]): {"color": "b"}})
+        # print(f"reached here {i}")
+        print(visited_edges[i][0], visited_edges[i][1])
+        showTree(True)
+        # nx.set_edge_attributes(G,{(visited_edges[i+1][0], visited_edges[i+1][1]): {"color": "b"}})
+
 
 # end BFS
 
@@ -225,7 +318,12 @@ def getEdgeData():
     return edgeFrom, edgeTo, edgeWeight
 
 
-G = nx.DiGraph()
+def getStartingNode():
+    start_node = starting_node.get("1.0", "end-1c")
+    return start_node
+
+
+# G = nx.DiGraph()
 
 
 def deleteNode():
@@ -248,10 +346,6 @@ def AddNode():
 
 
 def AddEdge():
-    # if isGoal:
-    #     color = "blue"
-    # else:
-    #     color = "yellow"
     from_node, to_node, weight = getEdgeData()
     if from_node not in nx.nodes(G) or to_node not in nx.nodes(G):
         print("node doesn't exist please add node first")
@@ -262,7 +356,11 @@ def AddEdge():
         root.title("Warning!!")
         root.mainloop()
     else:
-        G.add_edge(from_node, to_node, weight=weight, color='r')
+        if is_directed:
+            G.add_edge(from_node, to_node, weight=weight, color='r')
+        else:
+            G.add_edge(from_node, to_node, weight=weight, color='r')
+            G.add_edge(to_node, from_node, weight=weight, color='r')
     print(G.adj)
     showTree(True)
 
@@ -278,16 +376,16 @@ def deleteGraph():
     showTree(True)
 
 
-def get_path(G):
+def get_path(G, visited):
     goal_node = [x for x, y in G.nodes(data=True) if y['is_goal'] == True]
     print(f"goal node is {goal_node}")
     path = []
-    starting_node = list(G.adj.keys())[0]
+    starting_node = getStartingNode()
     path.append(goal_node[0])
     while starting_node not in path:
-
         for nodes in G.predecessors(path[-1]):
-            path.append(nodes)
+            if nodes in visited:
+                path.append(nodes)
     print(path)
     gui_path.insert(tk.END, f"the path is {list(reversed(path))}")
     return list(reversed(path))
@@ -345,8 +443,15 @@ additional_frame = tk.Frame(
     padx=5,
     pady=10
 )
+
 nodes_frame.grid(row=1, column=0, padx=20, pady=50)
+on = tk.PhotoImage(file="on.png", )
+off = tk.PhotoImage(file="off.png", )
 additional_frame.grid(row=1, column=1)
+is_directed_label = tk.Label(master=nodes_frame, text="IS DIRECTED ?")
+is_directed_label.pack()
+is_directed_button = tk.Button(nodes_frame, image=on, bd=0, command=direction_switch)
+is_directed_button.pack(pady=2)
 guide_text = tk.Label(master=nodes_frame, text="Node name ")
 guide_text.pack()
 node_name = tk.Text(master=nodes_frame, width=6, height=1)
@@ -359,8 +464,6 @@ node_weight.insert(tk.END, "0")
 node_weight.pack(pady=10)
 is_goal = tk.Label(master=nodes_frame, text="IS GOAL ?")
 is_goal.pack()
-on = tk.PhotoImage(file="on.png", )
-off = tk.PhotoImage(file="off.png", )
 is_goal_button = tk.Button(nodes_frame, image=off, bd=0, command=switch)
 is_goal_button.pack(pady=2)
 add_node = tk.Button(master=nodes_frame, text="ADD NODE", borderwidth=10, command=AddNode)
@@ -387,6 +490,11 @@ edge_weight.insert(tk.END, "1")
 edge_weight.pack(pady=5)
 add_edge = tk.Button(master=additional_frame, text="ADD EDGE", borderwidth=10, command=AddEdge)
 add_edge.pack()
+staring_node_text = tk.Label(master=additional_frame, text="enter starting node ")
+staring_node_text.pack()
+starting_node = tk.Text(master=additional_frame, width=6, height=1)
+starting_node.insert(tk.END, "A")
+starting_node.pack()
 
 delete_node_text = tk.Label(master=nodes_frame, text="enter the node to be deleted")
 delete_node_text.pack()
@@ -408,11 +516,11 @@ algos_menu = tk.Menubutton(master=algos_menu_frame, text="choose algorithm", bg=
 algos_menu.menu = tk.Menu(algos_menu)
 algos_menu["menu"] = algos_menu.menu
 algos_menu.menu.add_command(label="Breadth first", command=BFS_helper)
-algos_menu.menu.add_command(label="depth first",command=DFS_helper )
+algos_menu.menu.add_command(label="depth first", command=DFS_helper)
 algos_menu.menu.add_command(label="Iterative deepening", )
-algos_menu.menu.add_command(label="Uniform Cost",command=uniform_cost_helper )
+algos_menu.menu.add_command(label="Uniform Cost", command=uniform_cost_helper)
 algos_menu.menu.add_command(label="A*", command=Astar_helper)
-algos_menu.menu.add_command(label="Greedy",command=greedy_helper )
+algos_menu.menu.add_command(label="Greedy", command=greedy_helper)
 algos_menu.pack()
 
 gui_path = tk.Text(additional_frame, height=5,
@@ -449,8 +557,9 @@ def showTree(refresh=False):
             colors.append(color)
         edges = G.edges()
         edge_colors = [G[u][v]['color'] for u, v in edges]
-        nx.draw(G, pos, with_labels=True, ax=ax1, node_color=colors, edge_color=edge_colors)
-        nx.draw_networkx_edge_labels(G, pos, edge_labels=labels, ax=ax1)
+        nx.draw(G, pos, with_labels=True, node_size=100, font_size=10, ax=ax1, node_color=colors,
+                edge_color=edge_colors)
+        nx.draw_networkx_edge_labels(G, pos, font_size=8, edge_labels=labels, ax=ax1)
     else:
         figure1 = plt.Figure()
         ax1 = figure1.add_subplot()
@@ -465,8 +574,9 @@ def showTree(refresh=False):
         for color in node_colors.values():
             colors.append(color)
         print(f"this is colors list: {colors}")
-        nx.draw(G, pos, with_labels=True, ax=ax1, node_color=colors, edge_color=edge_colors)
-        nx.draw_networkx_edge_labels(G, pos, edge_labels=labels, ax=ax1)
+        nx.draw(G, pos, with_labels=True, node_size=100, font_size=10, ax=ax1, node_color=colors,
+                edge_color=edge_colors)
+        nx.draw_networkx_edge_labels(G, pos, font_size=8, edge_labels=labels, ax=ax1)
 
 
 showTree()
