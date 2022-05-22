@@ -36,7 +36,9 @@ def dls( graph, node,G,maxdepth):  # function for BFS
 def iddls(graph, node,G):
     i = 0
     path = []
+    total_visited = []
     while len(path) == 0:
         our_visited, visited_edges, path = dls(graph, node,G, i)
+        total_visited += visited_edges
         i+=1
-    return our_visited, visited_edges, path
+    return our_visited, total_visited, path
