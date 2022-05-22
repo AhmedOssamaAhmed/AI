@@ -180,21 +180,21 @@ def DFS_helper():
     visited_nodes, visited_edges = dfs(visited, graph, getStartingNode())
     print(f"the visited nodes are: {visited_nodes}")
     print(f"the visited edges are: {visited_edges}")
-    get_path(G, visited_nodes)
+    get_path_updated(G, visited_nodes)
     visualizer(visited_edges)
     showTree(True)
+
 
 def IDF_helper():
     resetEdgeColor()
     goal_node = find_goal(G)
-    nodes, edges = IDS.IDDFS_Driver(G,getStartingNode(),goal_node,10)
-    get_path(G,nodes)
+    nodes, edges = IDS.IDDFS_Driver(G, getStartingNode(), goal_node, 10)
+    get_path(G, nodes)
     # print(f"adjusted paaaaathhhhhs are: {path}")
     print(f"adjusted nodes are: {nodes}")
     visualizer(edges)
     # gui_path.insert(tk.END, f"the path is {(nodes)}")
     showTree(True)
-
 
 
 def Astar_helper():
@@ -236,11 +236,12 @@ def uniform_cost_helper():
     H = nx.get_node_attributes(G, 'weight')
     goal_node = find_goal(G)
     graph1 = Graph(graph, H)
-    visited, edges, path = graph1.uniform_cost(getStartingNode(), goal_node)
-    print(f"the real nodes are : {visited}")
+    print(f"el graph aho ya bashaa {graph}")
+    edges, path = graph1.uniform_cost(getStartingNode(), goal_node)
+    # print(f"the real nodes are : {visited}")
     print(f"the real edges are : {edges}")
     print(f"the real path is : {path}")
-    gui_path.insert(tk.END, f"the path is {list(path)}")
+    gui_path.insert(tk.END, f"the path is {(path)}")
 
     visualizer(edges)
     showTree(True)
@@ -398,14 +399,48 @@ def get_path(G, visited):
     path = []
     starting_node = getStartingNode()
     path.append(goal_node[0])
+    print("Before While")
     while starting_node not in path:
+        print("after While 1")
         for nodes in G.predecessors(path[-1]):
             if nodes == starting_node:
                 path.append(nodes)
+                print("After if")
                 gui_path.insert(tk.END, f"the path is {list(reversed(path))}")
+                print("After GUI path")
                 return list(reversed(path))
-            if nodes in visited:
+            elif nodes in visited:
                 path.append(nodes)
+                print(f"appended node is {nodes}")
+    print(path)
+    gui_path.insert(tk.END, f"the path is {list(reversed(path))}")
+    return list(reversed(path))
+
+
+def get_path_updated(G, visited):
+    goal_node = [x for x, y in G.nodes(data=True) if y['is_goal'] == True]
+    print(visited)
+    print(f"goal node is {goal_node}")
+    path = []
+    starting_node = getStartingNode()
+    path.append(goal_node[0])
+    print("Before While")
+
+    while starting_node not in path:
+        print("after While 1")
+        for nodes in G.predecessors(path[-1]):
+            print(f"tab3et zoz ahyy {nodes}")
+            if nodes == starting_node:
+                path.append(nodes)
+                print("After if")
+                gui_path.insert(tk.END, f"the path is {list(reversed(path))}")
+                print("After GUI path")
+                return list(reversed(path))
+            else:
+                path.append(nodes)
+                poped = visited.remove(nodes)
+                print(f"poped {poped}")
+                print(f"appended node is {nodes}")
     print(path)
     gui_path.insert(tk.END, f"the path is {list(reversed(path))}")
     return list(reversed(path))
@@ -537,7 +572,7 @@ algos_menu.menu = tk.Menu(algos_menu)
 algos_menu["menu"] = algos_menu.menu
 algos_menu.menu.add_command(label="Breadth first", command=BFS_helper)
 algos_menu.menu.add_command(label="depth first", command=DFS_helper)
-algos_menu.menu.add_command(label="Iterative deepening",command=IDF_helper )
+algos_menu.menu.add_command(label="Iterative deepening", command=IDF_helper)
 algos_menu.menu.add_command(label="Uniform Cost", command=uniform_cost_helper)
 algos_menu.menu.add_command(label="A*", command=Astar_helper)
 algos_menu.menu.add_command(label="Greedy", command=greedy_helper)
@@ -557,7 +592,7 @@ graph_frame = tk.Frame(
     padx=0,
     width=1
 )
-graph_frame.grid(row=1, column=2, padx=0, pady=0,)
+graph_frame.grid(row=1, column=2, padx=0, pady=0, )
 
 
 def showTree(refresh=False):
@@ -565,7 +600,7 @@ def showTree(refresh=False):
         graph_frame.destroy()
         graph_frame.__init__(master=frame, )
         graph_frame.grid(row=1, column=2, pady=5, padx=0)
-        figure1 = plt.Figure(figsize=(7,7), dpi=80)
+        figure1 = plt.Figure(figsize=(7, 7), dpi=80)
         ax1 = figure1.add_subplot()
         bar1 = FigureCanvasTkAgg(figure1, graph_frame)
         bar1.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
@@ -586,9 +621,9 @@ def showTree(refresh=False):
         H_frame.destroy()
         H_frame.__init__(master=frame, )
         H_frame.grid(row=1, column=4, pady=5, padx=10)
-        heuristic_tree.tree(H_frame,node_heuristics)
+        heuristic_tree.tree(H_frame, node_heuristics)
     else:
-        figure1 = plt.Figure(figsize=(7,7), dpi=80)
+        figure1 = plt.Figure(figsize=(7, 7), dpi=80)
         ax1 = figure1.add_subplot()
         bar1 = FigureCanvasTkAgg(figure1, graph_frame)
         bar1.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
@@ -614,7 +649,7 @@ H_frame = tk.Frame(
     padx=10,
     pady=10
 )
-H_frame.grid(row=1, column = 4,pady=20, padx=0)
+H_frame.grid(row=1, column=4, pady=20, padx=0)
 heuristic_tree.tree(H_frame)
 # window.state('zoomed')
 window.mainloop()
