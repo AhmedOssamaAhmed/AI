@@ -1,6 +1,7 @@
 import networkx as nx
 from matplotlib import pyplot as plt
 from networkx.drawing.nx_pydot import graphviz_layout
+
 G = nx.DiGraph()
 
 
@@ -17,10 +18,11 @@ def toUndirected():
     return temp_graph
 
 
-def toDirected(temp_graph,G):
+def toDirected(temp_graph, G):
     G.clear()
     G = temp_graph
     return G
+
 
 G.add_node("A", weight=10, is_goal=False, node_color="yellow")
 G.add_node("B", weight=9, is_goal=False, node_color="yellow")
@@ -47,14 +49,14 @@ G.add_edge("I", "J", weight=1, color='r')
 G.add_edge("I", "K", weight=1, color='r')
 
 temp = toUndirected()
-G = toDirected(temp,G)
+G = toDirected(temp, G)
 
 node_we = nx.get_node_attributes(G, 'weight')
 labels = nx.get_edge_attributes(G, 'weight')
 pos = graphviz_layout(G, prog="dot")
 nx.draw(G, pos, with_labels=True)
 nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
-plt.show()
+# plt.show()
 # plt.show()
 # first_dict = G.adj
 #
@@ -67,6 +69,7 @@ plt.show()
 # print(minor_key)
 # print(minor_value)
 node_weights = nx.get_node_attributes(G, 'weight')
+
 
 # plt.show()
 
@@ -120,9 +123,31 @@ def toDirected():
     for i in range(len(edges)):
         G.remove_edge(edges[i][1], edges[i][0])
 
+
 # print(find_goal(G))
 # print(graphMap(G))
 
 # print(list(value.items())[0][0])
 
-print(f"nnnnnnnnnnnnnn{G.edges}")
+# print(f"nnnnnnnnnnnnnn{G.edges}")
+
+path_list = []
+
+def get_key(val, my_dict):
+    global path_list
+    for key, value in my_dict.items():
+        print(f"our keyyy {key} for fucking value {value}")
+        if val in value:
+            path_list.append(key)
+            get_key(key,my_dict)
+            print(path_list)
+
+
+# listt = [0, 0, 1, 2, 0, 1, 3, 4, 2, 5, 6]
+# goal = listt[-1]
+# path_list.append(goal)
+# dictt = {0: [1, 2], 1: [3, 4], 2: [5, 6]}
+#
+# get_key(6, dictt)
+# print(path_list)
+print(G.adj)

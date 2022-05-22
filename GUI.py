@@ -6,7 +6,10 @@ from PIL.ImImagePlugin import DATE
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import networkx as nx
 from networkx.drawing.nx_pydot import graphviz_layout
+
+import IDS
 import ZORAAAAR
+import heuristic_tree
 from Astar import Graph
 
 G = nx.DiGraph()
@@ -180,6 +183,18 @@ def DFS_helper():
     get_path(G, visited_nodes)
     visualizer(visited_edges)
     showTree(True)
+
+def IDF_helper():
+    resetEdgeColor()
+    goal_node = find_goal(G)
+    nodes, edges = IDS.IDDFS_Driver(G,getStartingNode(),goal_node,10)
+    get_path(G,nodes)
+    # print(f"adjusted paaaaathhhhhs are: {path}")
+    print(f"adjusted nodes are: {nodes}")
+    visualizer(edges)
+    # gui_path.insert(tk.END, f"the path is {(nodes)}")
+    showTree(True)
+
 
 
 def Astar_helper():
@@ -378,12 +393,17 @@ def deleteGraph():
 
 def get_path(G, visited):
     goal_node = [x for x, y in G.nodes(data=True) if y['is_goal'] == True]
+    print(visited)
     print(f"goal node is {goal_node}")
     path = []
     starting_node = getStartingNode()
     path.append(goal_node[0])
     while starting_node not in path:
         for nodes in G.predecessors(path[-1]):
+            if nodes == starting_node:
+                path.append(nodes)
+                gui_path.insert(tk.END, f"the path is {list(reversed(path))}")
+                return list(reversed(path))
             if nodes in visited:
                 path.append(nodes)
     print(path)
@@ -425,7 +445,7 @@ frame = tk.Frame(
 window.title("AI algorithms visualizer")
 frame.pack()
 
-frame.columnconfigure(3, weight=1, minsize=100)
+frame.columnconfigure(4, weight=1, minsize=100)
 frame.rowconfigure(1, weight=1, minsize=100)
 
 # adding nodes frames
@@ -433,18 +453,18 @@ nodes_frame = tk.Frame(
     master=frame,
     relief=tk.FLAT,
     borderwidth=3,
-    padx=5,
+    padx=0,
     pady=10,
 )
 additional_frame = tk.Frame(
     master=frame,
     relief=tk.FLAT,
     borderwidth=3,
-    padx=5,
+    padx=0,
     pady=10
 )
 
-nodes_frame.grid(row=1, column=0, padx=20, pady=50)
+nodes_frame.grid(row=1, column=0, padx=0, pady=50)
 on = tk.PhotoImage(file="on.png", )
 off = tk.PhotoImage(file="off.png", )
 additional_frame.grid(row=1, column=1)
@@ -457,10 +477,10 @@ guide_text.pack()
 node_name = tk.Text(master=nodes_frame, width=6, height=1)
 # node_name.insert(tk.END,"A")
 node_name.pack(pady=2)
-node_weight_text = tk.Label(master=nodes_frame, text="enter the node weight")
+node_weight_text = tk.Label(master=nodes_frame, text="enter the node heuristic")
 node_weight_text.pack(pady=2)
 node_weight = tk.Text(master=nodes_frame, width=6, height=1)
-node_weight.insert(tk.END, "0")
+node_weight.insert(tk.END, "1")
 node_weight.pack(pady=10)
 is_goal = tk.Label(master=nodes_frame, text="IS GOAL ?")
 is_goal.pack()
@@ -517,7 +537,7 @@ algos_menu.menu = tk.Menu(algos_menu)
 algos_menu["menu"] = algos_menu.menu
 algos_menu.menu.add_command(label="Breadth first", command=BFS_helper)
 algos_menu.menu.add_command(label="depth first", command=DFS_helper)
-algos_menu.menu.add_command(label="Iterative deepening", )
+algos_menu.menu.add_command(label="Iterative deepening",command=IDF_helper )
 algos_menu.menu.add_command(label="Uniform Cost", command=uniform_cost_helper)
 algos_menu.menu.add_command(label="A*", command=Astar_helper)
 algos_menu.menu.add_command(label="Greedy", command=greedy_helper)
@@ -534,9 +554,10 @@ graph_frame = tk.Frame(
     master=frame,
     relief=tk.GROOVE,
     pady=0,
-    padx=5
+    padx=0,
+    width=1
 )
-graph_frame.grid(row=1, column=2, padx=0, pady=0)
+graph_frame.grid(row=1, column=2, padx=0, pady=0,)
 
 
 def showTree(refresh=False):
@@ -544,7 +565,7 @@ def showTree(refresh=False):
         graph_frame.destroy()
         graph_frame.__init__(master=frame, )
         graph_frame.grid(row=1, column=2, pady=5, padx=0)
-        figure1 = plt.Figure()
+        figure1 = plt.Figure(figsize=(7,7), dpi=80)
         ax1 = figure1.add_subplot()
         bar1 = FigureCanvasTkAgg(figure1, graph_frame)
         bar1.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
@@ -557,11 +578,17 @@ def showTree(refresh=False):
             colors.append(color)
         edges = G.edges()
         edge_colors = [G[u][v]['color'] for u, v in edges]
-        nx.draw(G, pos, with_labels=True, node_size=100, font_size=10, ax=ax1, node_color=colors,
+        nx.draw(G, pos, with_labels=True, node_size=200, font_size=12, ax=ax1, node_color=colors,
                 edge_color=edge_colors)
         nx.draw_networkx_edge_labels(G, pos, font_size=8, edge_labels=labels, ax=ax1)
+
+        node_heuristics = list(nx.get_node_attributes(G, 'weight').items())
+        H_frame.destroy()
+        H_frame.__init__(master=frame, )
+        H_frame.grid(row=1, column=4, pady=5, padx=10)
+        heuristic_tree.tree(H_frame,node_heuristics)
     else:
-        figure1 = plt.Figure()
+        figure1 = plt.Figure(figsize=(7,7), dpi=80)
         ax1 = figure1.add_subplot()
         bar1 = FigureCanvasTkAgg(figure1, graph_frame)
         bar1.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
@@ -574,12 +601,20 @@ def showTree(refresh=False):
         for color in node_colors.values():
             colors.append(color)
         print(f"this is colors list: {colors}")
-        nx.draw(G, pos, with_labels=True, node_size=100, font_size=10, ax=ax1, node_color=colors,
+        nx.draw(G, pos, with_labels=True, node_size=200, font_size=15, ax=ax1, node_color=colors,
                 edge_color=edge_colors)
         nx.draw_networkx_edge_labels(G, pos, font_size=8, edge_labels=labels, ax=ax1)
 
 
 showTree()
-
+H_frame = tk.Frame(
+    master=frame,
+    relief=tk.FLAT,
+    borderwidth=3,
+    padx=10,
+    pady=10
+)
+H_frame.grid(row=1, column = 4,pady=20, padx=0)
+heuristic_tree.tree(H_frame)
 # window.state('zoomed')
 window.mainloop()
