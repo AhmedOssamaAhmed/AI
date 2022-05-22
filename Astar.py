@@ -63,7 +63,6 @@ class Graph:
 
     # heuristic function with equal values for all nodes
     def h(self, n):
-
         return self.H[n]
 
     def a_star_algorithm(self, start_node, stop_node):
@@ -286,76 +285,30 @@ class Graph:
         parents[startnode] = startnode
         path = []
         visitednode = []
-        openlist = []
-        g = {}
-        # edgelist=[]
-        edgelist2 = []
-        reconst_path = [endnode]
-        print(visitednode)
-        print('Visited edges: {}'.format(edgelist2))
-        print('Path found: {}'.format(reconst_path))
-
-        openlist.append(startnode)
-        for v in self.adjacency_list:
-            for (m, weight) in self.get_neighbors(v):
-                if v == startnode:
-                    g[v] = self.h(v)
-                    g[m] = self.h(m)
-                    path.append(startnode)
-                    parents[m] = startnode
-
-                    openlist.append(m)
-                else:
-                    if m not in g:
-                        g[m] = self.h(m)
-                        openlist.append(m)
-                        parents[m] = v
-        print(g)
-        min = endnode
-        while min != startnode:
-            value_k = g[min]
-            print(value_k)
-            for n in openlist:
-                print(n)
-                value_k1 = g[n]
-                print(value_k1)
-
-                if value_k >= value_k1:
-                    min = n
-                    print(min)
-                    value_k = value_k1
-
-            print(min)
-            openlist.remove(min)
-            print(openlist)
-            path.append(min)
+        edgelist = []
+        min = startnode
+        minPath = [startnode]
+        fringe =[]
+        while True:
             visitednode.append(min)
-            min = parents[min]
-            print(min)
-        print("nodes")
-        print(visitednode)
-
-        n = endnode
-        if n == endnode:
-
-            while parents[n] != n:
-                reconst_path.append(parents[n])
-                n = parents[n];
-        for l in visitednode:
-            if l != startnode:
-                if l in reconst_path:
-                    edgelist = []
-                    # print(parents[l])
-                    edgelist.append(parents[l])
-                    edgelist.append(l)
-                    # edgelist.append(min)
-                    edgelist2.append(edgelist)
-        reconst_path.reverse()
-        print(visitednode)
-        edgelist2.reverse()
-        print('Visited edges: {}'.format(edgelist2))
-        print('Path found: {}'.format(reconst_path))
-        return edgelist2, reconst_path
+            if min != startnode:
+                edgelist.append([minPath[len(minPath)-2],min])
+            if min == endnode:
+                path = minPath
+                break
+            next = self.get_neighbors(min)
+            for node in next:
+                fringe += [(node[0],node[1], minPath + [node[0]])]
+                print("fringe like")
+                print(fringe)
+            minHeuristic = 9999999
+            for n in fringe:
+                if n[0] not in visitednode:
+                    if self.h(n[0]) < minHeuristic:
+                        minHeuristic = self.h(n[0])
+                        min = n[0]
+                        minPath = n[2]
+        return edgelist, path
 
 
     def uniform_cost1(self, start_node, stop_node):
