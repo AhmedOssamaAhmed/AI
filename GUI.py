@@ -127,6 +127,7 @@ def dfs(visited, graph, node):  # function for BFS
         queue.pop(selectedIndex)
         our_visited.append(m)
         goal = is_Goal[m]
+        visited_edges.append([selectedPath[len(selectedPath)-2],m])
         if goal:
             return our_visited, visited_edges, selectedPath
         else:
@@ -134,7 +135,6 @@ def dfs(visited, graph, node):  # function for BFS
                 if neighbour not in visited:
                     visited.append(neighbour)
                     queue.append((neighbour, selectedPath + [neighbour], selectedDepth + 1))
-                    visited_edges.append([m, neighbour])
 
 
 def bfs(visited, graph, node):  # function for BFS
@@ -149,6 +149,8 @@ def bfs(visited, graph, node):  # function for BFS
         print(m, end=" ")
         our_visited.append(m)
         goal = is_Goal[m]
+        visited_edges.append([currNode[1][len(currNode[1])-2],m])
+
         if goal:
             return our_visited, visited_edges, currNode[1]
         else:
@@ -156,7 +158,6 @@ def bfs(visited, graph, node):  # function for BFS
                 if neighbour not in visited:
                     visited.append(neighbour)
                     queue.append((neighbour, currNode[1] + [neighbour]))
-                    visited_edges.append([m, neighbour])
 
 
 def BFS_helper():
@@ -195,12 +196,13 @@ def DFS_helper():
 def IDF_helper():
     # resetEdgeColor()
     goal_node = find_goal(G)
-    nodes, edges = IDS.IDDFS_Driver(G, getStartingNode(), goal_node, 10)
+    graph = G.adj
+    nodes, edges,path = IDS.iddls(graph, getStartingNode(),goal_node)
     # get_path(G, nodes)
-    # print(f"adjusted paaaaathhhhhs are: {path}")
+    print(f"adjusted paaaaathhhhhs are: {path}")
     print(f"adjusted nodes are: {nodes}")
     visualizer(edges)
-    # gui_path.insert(tk.END, f"the path is {(nodes)}")
+    gui_path.insert(tk.END, f"the path is {(path)}")
     showTree(True)
 
 
@@ -226,7 +228,7 @@ def greedy_helper():
     H = nx.get_node_attributes(G, 'weight')
     goal_node = find_goal(G)
     graph1 = Graph(graph, H)
-    edges, path = graph1.greedy_algorithm(getStartingNode(), goal_node)
+    edges, path = graph1.greedy(getStartingNode(), goal_node)
     # print(f"the real nodes are : {visited}")
     print(f"the real edges are : {edges}")
     print(f"the real path is : {path}")
@@ -557,7 +559,7 @@ add_edge.pack()
 staring_node_text = tk.Label(master=additional_frame, text="enter starting node ")
 staring_node_text.pack()
 starting_node = tk.Text(master=additional_frame, width=6, height=1)
-starting_node.insert(tk.END, "S")
+starting_node.insert(tk.END, "A")
 starting_node.pack()
 
 delete_node_text = tk.Label(master=nodes_frame, text="enter the node to be deleted")
