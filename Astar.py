@@ -143,10 +143,8 @@ class Graph:
         for l in range(len(visitednode)):
             if visitednode[l] != startnode:
                 edgelist = []
-                # print(parents[l])
                 edgelist.append(parents[visitednode[l]])
                 edgelist.append(visitednode[l])
-                # edgelist.append(min)
                 edgelist2.append(edgelist)
         n = endnode
         if n == endnode:

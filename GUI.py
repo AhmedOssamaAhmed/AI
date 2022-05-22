@@ -9,7 +9,7 @@ from networkx.drawing.nx_pydot import graphviz_layout
 
 import AUTO_BUTTON
 import IDS
-import ZORAAAAR
+import autograph
 import heuristic_tree
 from Astar import Graph
 
@@ -534,7 +534,7 @@ is_goal_button = tk.Button(nodes_frame, image=off, bd=0, command=switch)
 is_goal_button.pack(pady=2)
 add_node = tk.Button(master=nodes_frame, text="ADD NODE", borderwidth=10, command=AddNode)
 add_node.pack()
-auto_graph = tk.Button(master=additional_frame, text="Auto Graph", borderwidth=10, command=ZORAAAAR.node_statics)
+auto_graph = tk.Button(master=additional_frame, text="Auto Graph", borderwidth=10, command=autograph.node_statics)
 auto_graph.pack(pady=10)
 hint_text = tk.Label(master=nodes_frame, text="warning you should add the node before adding the edge !",
                      font=('Arial', 8,), fg="red")
@@ -662,5 +662,4 @@ H_frame = tk.Frame(
 )
 H_frame.grid(row=1, column=4, pady=20, padx=0)
 heuristic_tree.tree(H_frame)
-# window.state('zoomed')
 window.mainloop()

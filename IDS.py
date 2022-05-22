@@ -1,5 +1,3 @@
-import networkx as nx
-
 
 def dls( graph, node,G,maxdepth):  # function for BFS
     queue=[]
