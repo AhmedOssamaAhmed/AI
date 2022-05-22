@@ -105,68 +105,73 @@ visited = []  # List for visited nodes.
 visited_edges = []
 
 
-def dfs(visited, graph, node):  # function for dfs
-    global visited_edges
+def dfs(visited, graph, node):  # function for BFS
     our_visited = []
-    if node not in visited:
-        is_Goal = nx.get_node_attributes(G, "is_goal")
-        goal = is_Goal[node]
-        print(goal)
-        print(node)
+    visited.append(node)
+    queue.append((node, [node], 0))
+    visited_edges = []
+    is_Goal = nx.get_node_attributes(G, "is_goal")
+    while queue:  # Creating loop to visit each node
+        m = None
+        selectedPath = []
+        selectedDepth = -1
+        selectedIndex = -1
+        i = 0
+        for (node, path, depth) in queue:
+            if selectedDepth < depth:
+                selectedDepth = depth
+                m = node
+                selectedPath = path
+                selectedIndex = i
+            i+=1
+        queue.pop(selectedIndex)
+        our_visited.append(m)
+        goal = is_Goal[m]
         if goal:
-            print("reached goal node")
-            print(f"visited {visited}")
-            print(f"visited edges:{visited_edges}")
-            return True
-
+            return our_visited, visited_edges, selectedPath
         else:
-            # print(node)
-            visited.append(node)
-            our_visited.append(node)
-            for neighbour in graph[node]:
-                print("reached iterations")
-                print(node)
-                print(f"neigbour is {neighbour}")
-                visited_edges.append([node, neighbour])
-                isDone = dfs(visited, graph, neighbour)
-                if isDone:
-                    return visited, visited_edges
-        # return visited,visited_edges
+            for neighbour in graph[m]:
+                if neighbour not in visited:
+                    visited.append(neighbour)
+                    queue.append((neighbour, selectedPath + [neighbour], selectedDepth + 1))
+                    visited_edges.append([m, neighbour])
 
 
 def bfs(visited, graph, node):  # function for BFS
     our_visited = []
     visited.append(node)
-    queue.append(node)
+    queue.append((node, [node]))
     visited_edges = []
     is_Goal = nx.get_node_attributes(G, "is_goal")
     while queue:  # Creating loop to visit each node
-        m = queue.pop(0)
+        currNode = queue.pop(0)
+        m = currNode[0]
         print(m, end=" ")
         our_visited.append(m)
         goal = is_Goal[m]
         if goal:
-            return our_visited, visited_edges
+            return our_visited, visited_edges, currNode[1]
         else:
             for neighbour in graph[m]:
                 if neighbour not in visited:
                     visited.append(neighbour)
-                    queue.append(neighbour)
+                    queue.append((neighbour, currNode[1] + [neighbour]))
                     visited_edges.append([m, neighbour])
 
 
 def BFS_helper():
     visited.clear()
-    resetEdgeColor()
+    # resetEdgeColor()
 
     graph = G.adj
-    visited_nodes, visited_edges = bfs(visited, graph, getStartingNode())
+    visited_nodes, visited_edges,path = bfs(visited, graph, getStartingNode())
     print(f"the visited nodes are: {visited_nodes}")
     print(f"the visited edges are: {visited_edges}")
     # goal_node = find_goal(G)
-    get_path(G, visited_nodes)
-    # gui_path.insert(tk.END, f"the path is {path}")
-    # print(f"new reached path is {(path)}")
+    # get_path(G, visited_nodes)
+
+    gui_path.insert(tk.END, f"the path is {path}")
+    print(f"hawary reached path is {(path)}")
     # for nodes in path:
     #     print(f"new reached path is {(nodes)}")
     visualizerV2(visited_edges, visited_nodes)
@@ -178,19 +183,20 @@ def DFS_helper():
     visited.clear()
     # resetEdgeColor()
     graph = G.adj
-    visited_nodes, visited_edges = dfs(visited, graph, getStartingNode())
+    visited_nodes, visited_edges, path = dfs(visited, graph, getStartingNode())
     print(f"the visited nodes are: {visited_nodes}")
     print(f"the visited edges are: {visited_edges}")
-    get_path_updated(G, visited_nodes)
+    gui_path.insert(tk.END, f"the path is {path}")
+    print(f"hawary reached path is {(path)}")
     visualizer(visited_edges)
     showTree(True)
 
 
 def IDF_helper():
-    resetEdgeColor()
+    # resetEdgeColor()
     goal_node = find_goal(G)
     nodes, edges = IDS.IDDFS_Driver(G, getStartingNode(), goal_node, 10)
-    get_path(G, nodes)
+    # get_path(G, nodes)
     # print(f"adjusted paaaaathhhhhs are: {path}")
     print(f"adjusted nodes are: {nodes}")
     visualizer(edges)
@@ -199,7 +205,7 @@ def IDF_helper():
 
 
 def Astar_helper():
-    resetEdgeColor()
+    # resetEdgeColor()
     graph = graphMap(G)
     H = nx.get_node_attributes(G, 'weight')
     goal_node = find_goal(G)
@@ -215,13 +221,13 @@ def Astar_helper():
 
 
 def greedy_helper():
-    resetEdgeColor()
+    # resetEdgeColor()
     graph = graphMap(G)
     H = nx.get_node_attributes(G, 'weight')
     goal_node = find_goal(G)
     graph1 = Graph(graph, H)
-    visited, edges, path = graph1.greedy_algorithm(getStartingNode(), goal_node)
-    print(f"the real nodes are : {visited}")
+    edges, path = graph1.greedy_algorithm(getStartingNode(), goal_node)
+    # print(f"the real nodes are : {visited}")
     print(f"the real edges are : {edges}")
     print(f"the real path is : {path}")
     gui_path.delete('1.0', tk.END)
@@ -232,7 +238,7 @@ def greedy_helper():
 
 
 def uniform_cost_helper():
-    resetEdgeColor()
+    # resetEdgeColor()
     graph = graphMap(G)
     H = nx.get_node_attributes(G, 'weight')
     goal_node = find_goal(G)
@@ -526,7 +532,7 @@ is_goal_button = tk.Button(nodes_frame, image=off, bd=0, command=switch)
 is_goal_button.pack(pady=2)
 add_node = tk.Button(master=nodes_frame, text="ADD NODE", borderwidth=10, command=AddNode)
 add_node.pack()
-auto_graph = tk.Button(master=additional_frame, text="Auto Graph", borderwidth=10, command=AUTO_BUTTON.node_statics2)
+auto_graph = tk.Button(master=additional_frame, text="Auto Graph", borderwidth=10, command=ZORAAAAR.node_statics)
 auto_graph.pack(pady=10)
 hint_text = tk.Label(master=nodes_frame, text="warning you should add the node before adding the edge !",
                      font=('Arial', 8,), fg="red")

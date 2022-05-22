@@ -1,10 +1,12 @@
 Visited_edges_list = []
 Visited = []
-path_list=[]
-temp_VEdges=[]
-iterativeVisited=[]
+path_list = []
+temp_VEdges = []
+iterativeVisited = []
+
+
 def graphMapIDS(graph):
-    #used to change the list presented by the user to a another form for the IDDFS
+    # used to change the list presented by the user to a another form for the IDDFS
     first_dict = graph.adj
     graph_len = len(list(first_dict.items()))
     our_dict = {}
@@ -21,6 +23,7 @@ def graphMapIDS(graph):
         # print(our_dict)
     return our_dict
 
+
 def DLS(graph, src, target, maxDepth):
     global iterativeVisited
     global Visited
@@ -36,8 +39,8 @@ def DLS(graph, src, target, maxDepth):
 
     # Recur for all the vertices adjacent to this vertex
     for i in graph[src]:
-        if(graph[i] not in iterativeVisited):
-            temp=[]
+        if (graph[i] not in iterativeVisited):
+            temp = []
             temp.append(src)
             temp.append(i)
             temp_VEdges.append(temp)
@@ -48,6 +51,7 @@ def DLS(graph, src, target, maxDepth):
         if (DLS(graph, i, target, maxDepth - 1)):
             return True
     return False
+
 
 def IDDFS_Driver(grapher, src, target, maxDepth):
     global Visited
@@ -60,14 +64,14 @@ def IDDFS_Driver(grapher, src, target, maxDepth):
         # get_key(target, graph)
         print(f"our visitedddd {Visited}")
         adjusted_visited = []
-        for i in range(len(Visited)-1,0,-1):
+        for i in range(len(Visited) - 1, 0, -1):
             if Visited[i] == src:
                 adjusted_visited.append(Visited[i])
                 print(Visited[i])
                 print("Testtttt")
                 print(src)
-                return list(reversed(adjusted_visited)),temp_VEdges
-                    # ,get_visited_edges(Visited, graph, target, src)
+                return list(reversed(adjusted_visited)), temp_VEdges
+                # ,get_visited_edges(Visited, graph, target, src)
             else:
                 print(Visited[i])
                 adjusted_visited.append(Visited[i])
@@ -75,12 +79,16 @@ def IDDFS_Driver(grapher, src, target, maxDepth):
 
     else:
         print("Unreachable")
+
+
 def IDDFS(graph, src, target, maxDepth):
     for i in range(maxDepth):
         Reachable = (DLS(graph, src, target, i))
         if Reachable:
             break
     return Reachable
+
+
 def get_key(val, my_dict):
     global path_list
     for key, value in my_dict.items():
@@ -88,7 +96,9 @@ def get_key(val, my_dict):
             path_list.append(key)
             get_key(key, my_dict)
             print(path_list)
-def get_visited_edges(Visited , my_dict, target, start_node):
+
+
+def get_visited_edges(Visited, my_dict, target, start_node):
     global Visited_edges_list
     state = False
     if target not in Visited:
@@ -109,6 +119,9 @@ def get_visited_edges(Visited , my_dict, target, start_node):
                     print(Visited_edges_list)
                     if temp not in Visited_edges_list:
                         Visited_edges_list.append(temp)
-                        temp2=key
+                        temp2 = key
                     break
     return list(reversed(Visited_edges_list))
+
+
+

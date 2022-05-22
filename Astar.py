@@ -140,80 +140,146 @@ class Graph:
         print('Path does not exist!')
         return None
 
-    def greedy_algorithm(self, start_node, stop_node):
-        open_list = set([start_node])
-        closed_list = set([])
-        Visited = [stop_node]
-        Visited_edges = []
-
-        g = {}
-
-        g[start_node] = 0
-
+    # def greedy_algorithm(self, start_node, stop_node):
+    #     open_list = set([start_node])
+    #     closed_list = set([])
+    #     Visited = [stop_node]
+    #     Visited_edges = []
+    #
+    #     g = {}
+    #
+    #     g[start_node] = 0
+    #
+    #     parents = {}
+    #     parents[start_node] = start_node
+    #
+    #     while len(open_list) > 0:
+    #         n = None
+    #
+    #         for v in open_list:
+    #             if n == None or  self.h(v) <  self.h(n):
+    #                 n = v;
+    #
+    #         if n == None:
+    #             print('Path does not exist!')
+    #             return None
+    #
+    #         if n == stop_node:
+    #             reconst_path = []
+    #
+    #             while parents[n] != n:
+    #                 reconst_path.append(n)
+    #                 n = parents[n]
+    #
+    #             reconst_path.append(start_node)
+    #             Visited.append(start_node)
+    #             Visited.reverse()
+    #             for i in range(len(Visited)):
+    #                 if Visited[i] != start_node:
+    #                     list = []
+    #                     list.append(parents[Visited[i]])
+    #                     list.append(Visited[i])
+    #                     Visited_edges.append(list)
+    #
+    #             reconst_path.reverse()
+    #             print('Visited: {}'.format(Visited))
+    #             print('Visited edges: {}'.format(Visited_edges))
+    #             print('Path found: {}'.format(reconst_path))
+    #             return Visited, Visited_edges, reconst_path
+    #
+    #         # for all neighbors of the current node do
+    #         for (m, weight) in self.get_neighbors(n):
+    #             if m not in open_list and m not in closed_list:
+    #                 open_list.add(m)
+    #                 parents[m] = n
+    #                 g[m] =  weight
+    #
+    #             else:
+    #                 if g[m] >  weight:
+    #                     g[m] =  weight
+    #                     parents[m] = n
+    #
+    #                     if m in closed_list:
+    #                         closed_list.remove(m)
+    #                         open_list.add(m)
+    #
+    #         open_list.remove(n)
+    #         closed_list.add(n)
+    #         if parents[m] in closed_list:
+    #             if parents[m] != start_node:
+    #                 Visited.append(parents[m])
+    #         if m in closed_list:
+    #             Visited.append(m)
+    #
+    #     print('Path does not exist!')
+    #     return None
+    def greedy_algorithm(self, startnode, endnode):
         parents = {}
-        parents[start_node] = start_node
+        parents[startnode] = startnode
+        path = []
+        visitednode = []
+        openlist = []
+        g = {}
+        # edgelist=[]
+        edgelist2 = []
+        reconst_path = [endnode]
+        print(visitednode)
+        print('Visited edges: {}'.format(edgelist2))
+        print('Path found: {}'.format(reconst_path))
 
-        while len(open_list) > 0:
-            n = None
+        openlist.append(startnode)
+        for v in self.adjacency_list:
+            for (m, weight) in self.get_neighbors(v):
+                if v == startnode:
+                    g[v] = 0
+                    g[m] = self.h(startnode)
+                    path.append(startnode)
+                    parents[m] = startnode
 
-            for v in open_list:
-                if n == None or  self.h(v) <  self.h(n):
-                    n = v;
-
-            if n == None:
-                print('Path does not exist!')
-                return None
-
-            if n == stop_node:
-                reconst_path = []
-
-                while parents[n] != n:
-                    reconst_path.append(n)
-                    n = parents[n]
-
-                reconst_path.append(start_node)
-                Visited.append(start_node)
-                Visited.reverse()
-                for i in range(len(Visited)):
-                    if Visited[i] != start_node:
-                        list = []
-                        list.append(parents[Visited[i]])
-                        list.append(Visited[i])
-                        Visited_edges.append(list)
-
-                reconst_path.reverse()
-                print('Visited: {}'.format(Visited))
-                print('Visited edges: {}'.format(Visited_edges))
-                print('Path found: {}'.format(reconst_path))
-                return Visited, Visited_edges, reconst_path
-
-            # for all neighbors of the current node do
-            for (m, weight) in self.get_neighbors(n):
-                if m not in open_list and m not in closed_list:
-                    open_list.add(m)
-                    parents[m] = n
-                    g[m] =  weight
-
+                    openlist.append(m)
                 else:
-                    if g[m] >  weight:
-                        g[m] =  weight
-                        parents[m] = n
+                    if m not in g:
+                        g[m] = self.h(m)
+                        openlist.append(m)
+                        parents[m] = v
+        print(g)
+        min = startnode
+        while min != endnode:
 
-                        if m in closed_list:
-                            closed_list.remove(m)
-                            open_list.add(m)
+            value_k = (g[openlist[0]])
+            for n in openlist:
+                value_k1 = g[n]
 
-            open_list.remove(n)
-            closed_list.add(n)
-            if parents[m] in closed_list:
-                if parents[m] != start_node:
-                    Visited.append(parents[m])
-            if m in closed_list:
-                Visited.append(m)
+                if value_k >= value_k1:
+                    min = n
+                    value_k = value_k1
+            if value_k > g[openlist[0]]:
+                min = openlist[0]
 
-        print('Path does not exist!')
-        return None
+            openlist.remove(min)
+            path.append(min)
+            if min not in visitednode:
+                visitednode.append(min)
+        for l in range(len(visitednode)):
+            if visitednode[l] != startnode:
+                edgelist = []
+                # print(parents[l])
+                edgelist.append(parents[visitednode[l]])
+                edgelist.append(visitednode[l])
+                # edgelist.append(min)
+                edgelist2.append(edgelist)
+        n = endnode
+        if n == endnode:
 
+            while parents[n] != n:
+                reconst_path.append(parents[n])
+                n = parents[n];
+
+        reconst_path.reverse()
+        print(visitednode)
+        print('Visited edges: {}'.format(edgelist2))
+        print('Path found: {}'.format(reconst_path))
+        return edgelist2,reconst_path
     def uniform_cost1(self, start_node, stop_node):
         open_list = set([start_node])
         closed_list = set([])
