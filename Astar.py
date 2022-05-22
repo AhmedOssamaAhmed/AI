@@ -459,7 +459,7 @@ class Graph:
         print('Path does not exist!')
         return None
 
-    def uniform_cost(self,startnode, endnode ):
+    def uniform_cost4(self,startnode, endnode ):
         parents = {}
         parents[startnode] = startnode
         path = []
@@ -522,6 +522,87 @@ class Graph:
         print('Visited edges: {}'.format(edgelist2))
         print('Path found: {}'.format(reconst_path))
         return edgelist2 ,reconst_path
+
+    def uniform_cost(self, startnode, endnode):
+        parents = {}
+        parents[startnode] = startnode
+        path = []
+        visitednode = []
+        openlist = []
+        g = {}
+        # edgelist=[]
+        edgelist2 = []
+        reconst_path = [endnode]
+
+        openlist.append(startnode)
+        for v in self.adjacency_list:
+            for (m, weight) in self.get_neighbors(v):
+                if v == startnode:
+                    g[v] = 0
+                    g[m] = weight
+                    path.append(startnode)
+                    parents[m] = startnode
+
+                    openlist.append(m)
+                else:
+                    if m not in g:
+                        g[m] = g[v] + weight
+                        openlist.append(m)
+                        parents[m] = v
+
+        min = startnode
+        while min != endnode:
+
+            value_k = (g[openlist[0]])
+            for n in openlist:
+                value_k1 = g[n]
+
+                if value_k >= value_k1:
+                    min = n
+                    value_k = value_k1
+            if value_k > g[openlist[0]]:
+                min = openlist[0]
+
+            openlist.remove(min)
+            path.append(min)
+            if min not in visitednode:
+                visitednode.append(min)
+        for l in range(len(visitednode)):
+            if visitednode[l] != startnode:
+                edgelist = []
+                # print(parents[l])
+                edgelist.append(parents[visitednode[l]])
+                edgelist.append(visitednode[l])
+                # edgelist.append(min)
+                edgelist2.append(edgelist)
+        n = endnode
+        if n == endnode:
+
+            while parents[n] != n:
+                reconst_path.append(parents[n])
+                n = parents[n];
+
+        reconst_path.reverse()
+        print(visitednode)
+        print('Visited edges: {}'.format(edgelist2))
+        print('Path found: {}'.format(reconst_path))
+        return edgelist2,reconst_path
+
+
+    # adjacency_list = {
+    #     'A': [('B', 2), ('I', 3)],
+    #     'B': [('C', 3)],
+    #     'C': [('D', 4), ('F', 3)],
+    #     'D': [('E', 1)],
+    #     'E': [],
+    #     'F': [('G', 1), ('H', 4)],
+    #     'G': [],
+    #     'H': [],
+    #     'I': [('H', 12), ('J', 1), ('K', 1)],
+    #     'J': [],
+    #     'K': []
+    #
+    # }
 
 
 # def graphMap(graph):

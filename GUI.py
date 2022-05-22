@@ -7,6 +7,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import networkx as nx
 from networkx.drawing.nx_pydot import graphviz_layout
 
+import AUTO_BUTTON
 import IDS
 import ZORAAAAR
 import heuristic_tree
@@ -94,7 +95,7 @@ def resetEdgeColor():
     for i in range(len(edges)):
         nx.set_edge_attributes(G, {(edges[i][0], edges[i][1]): {"color": "r"}})
         nx.set_edge_attributes(G, {(edges[i][1], edges[i][0]): {"color": "r"}})
-        print("reset done successfully ")
+        print(f"reset done successfully for edge {edges[i][0],edges[0][i]} ")
 
 
 # start BFS
@@ -175,7 +176,7 @@ def BFS_helper():
 
 def DFS_helper():
     visited.clear()
-    resetEdgeColor()
+    # resetEdgeColor()
     graph = G.adj
     visited_nodes, visited_edges = dfs(visited, graph, getStartingNode())
     print(f"the visited nodes are: {visited_nodes}")
@@ -437,9 +438,11 @@ def get_path_updated(G, visited):
                 print("After GUI path")
                 return list(reversed(path))
             else:
-                path.append(nodes)
-                poped = visited.remove(nodes)
-                print(f"poped {poped}")
+                if nodes in visited:
+                    path.append(nodes)
+                    visited.remove(nodes)
+                # poped = visited.remove(nodes)
+                # print(f"poped {poped}")
                 print(f"appended node is {nodes}")
     print(path)
     gui_path.insert(tk.END, f"the path is {list(reversed(path))}")
@@ -523,10 +526,10 @@ is_goal_button = tk.Button(nodes_frame, image=off, bd=0, command=switch)
 is_goal_button.pack(pady=2)
 add_node = tk.Button(master=nodes_frame, text="ADD NODE", borderwidth=10, command=AddNode)
 add_node.pack()
-auto_graph = tk.Button(master=additional_frame, text="Auto Graph", borderwidth=10, command=ZORAAAAR.node_statics)
+auto_graph = tk.Button(master=additional_frame, text="Auto Graph", borderwidth=10, command=AUTO_BUTTON.node_statics2)
 auto_graph.pack(pady=10)
 hint_text = tk.Label(master=nodes_frame, text="warning you should add the node before adding the edge !",
-                     font=('Arial', 8,), fg="red", bg="black")
+                     font=('Arial', 8,), fg="red")
 hint_text.pack(pady=5)
 add_edge_from_text = tk.Label(master=additional_frame, text="edge From node ")
 add_edge_from_text.pack()
@@ -548,7 +551,7 @@ add_edge.pack()
 staring_node_text = tk.Label(master=additional_frame, text="enter starting node ")
 staring_node_text.pack()
 starting_node = tk.Text(master=additional_frame, width=6, height=1)
-starting_node.insert(tk.END, "A")
+starting_node.insert(tk.END, "S")
 starting_node.pack()
 
 delete_node_text = tk.Label(master=nodes_frame, text="enter the node to be deleted")
@@ -558,7 +561,7 @@ delete_node.pack(pady=5)
 delete_node_button = tk.Button(master=nodes_frame, text="Delete Node", borderwidth=10, command=deleteNode)
 delete_node_button.pack()
 rest_button = tk.Button(master=nodes_frame, text="RESET GRAPH", pady=5, padx=5, borderwidth=9, relief=tk.GROOVE,
-                        width=20, bg='orange'
+                        width=20
                         , command=deleteGraph)
 rest_button.pack(pady=9)
 algos_menu_frame = tk.Frame(
@@ -567,7 +570,7 @@ algos_menu_frame = tk.Frame(
     borderwidth=15
 )
 algos_menu_frame.pack(pady=1)
-algos_menu = tk.Menubutton(master=algos_menu_frame, text="choose algorithm", bg="blue", fg="yellow")
+algos_menu = tk.Menubutton(master=algos_menu_frame, text="choose algorithm", bg="light blue", fg="navy")
 algos_menu.menu = tk.Menu(algos_menu)
 algos_menu["menu"] = algos_menu.menu
 algos_menu.menu.add_command(label="Breadth first", command=BFS_helper)
